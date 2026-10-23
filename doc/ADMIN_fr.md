@@ -22,8 +22,9 @@ En cas d'échec de la synchronisation, mettez à jour les modules bancaires depu
 
 ### Mises à jour
 
-Une mise à jour applique les migrations de la base de données (`tools/migrate.php`) et
-reconstruit woob. Lisez les [notes de version](https://github.com/ltoinel/Carbure/releases)
+Une mise à jour applique les migrations de la base de données (`tools/migrate.php`), met à
+jour les modules bancaires, et reconstruit woob quand sa version change. YunoHost sauvegarde
+Carbure avant. Lisez les [notes de version](https://github.com/ltoinel/Carbure/releases)
 de Carbure avant une mise à jour majeure.
 
 Plus d'informations : [documentation de Carbure](https://carbure.org/).

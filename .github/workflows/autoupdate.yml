@@ -1,0 +1,70 @@
+# New release of Carbure: a pull request with its version, its archive and its sha256
+# (the job the YunoHost autoupdate bot does for the apps of the YunoHost-Apps organization).
+name: Update to the latest Carbure release
+
+on:
+  schedule:
+    - cron: '23 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: autoupdate
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Latest release of Carbure
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=$(gh release view --repo ltoinel/Carbure --json tagName --jq .tagName)
+          # Only vX.Y.Z: the tag ends up in the manifest and in a branch name
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Unexpected tag: $tag"; exit 1; }
+          current=$(sed -n 's/^version = "\(.*\)~ynh[0-9]*"$/\1/p' manifest.toml)
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+          echo "current=$current" >> "$GITHUB_OUTPUT"
+
+      - name: Update the manifest
+        if: steps.release.outputs.version != steps.release.outputs.current
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          url="https://github.com/ltoinel/Carbure/archive/refs/tags/$TAG.tar.gz"
+          sha256=$(curl -fsSL "$url" | sha256sum | cut -d' ' -f1)
+          sed -i \
+            -e "s|^version = \".*\"$|version = \"$VERSION~ynh1\"|" \
+            -e "s|^        url = \"https://github.com/ltoinel/Carbure/archive/refs/tags/.*\"$|        url = \"$url\"|" \
+            -e "s|^        sha256 = \".*\"$|        sha256 = \"$sha256\"|" \
+            -e "/# FIXME: set the sha256 of the release/d" \
+            manifest.toml
+          git diff --stat
+
+      - name: Open the pull request
+        if: steps.release.outputs.version != steps.release.outputs.current
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          branch="ci-auto-update-v$VERSION"
+          if git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+            echo "A pull request for $VERSION already exists"; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git commit -am "Upgrade to Carbure $VERSION"
+          git push origin "$branch"
+          gh pr create --base main --head "$branch" --title "Upgrade to Carbure $VERSION" \
+            --body "New release of Carbure: https://github.com/ltoinel/Carbure/releases/tag/v$VERSION. Read its notes (migrations, breaking changes) and test the upgrade before merging."

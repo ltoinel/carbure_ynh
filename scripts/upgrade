@@ -15,12 +15,10 @@ _php_settings
 #=================================================
 ynh_script_progression "Upgrading source files..."
 
-# The data (configuration, logs, woob) is in the data directory: nothing to keep here
-ynh_setup_source --dest_dir="$install_dir" --full_replace
+# The data (configuration, logs, banks) is in the data directory; the virtualenv of woob
+# is kept, and rebuilt only when its version changes
+ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="woob"
 _carbure_layout
-
-ynh_script_progression "Installing woob $woob_version, this takes a few minutes..."
-
 _woob_install
 
 #=================================================

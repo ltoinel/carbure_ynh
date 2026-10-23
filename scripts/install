@@ -24,9 +24,6 @@ ynh_script_progression "Setting up source files..."
 
 ynh_setup_source --dest_dir="$install_dir"
 _carbure_layout
-
-ynh_script_progression "Installing woob $woob_version (bank synchronization), this takes a few minutes..."
-
 _woob_install
 
 #=================================================
@@ -44,6 +41,15 @@ _sync_add
 ynh_script_progression "Installing Carbure..."
 
 admin_mail=$(ynh_user_get_info --username="$admin" --key=mail)
+
+# The data directory of an earlier installation, removed without --purge, is kept by
+# YunoHost: its configuration points to the database removed with it. It is set aside, and
+# Carbure installed on the new database (woob keeps the banks already configured).
+if [ -f "$data_dir/conf/prod.ini" ]; then
+    old_config="$data_dir/conf/prod.ini.old-$(date +%Y%m%d%H%M%S)"
+    mv "$data_dir/conf/prod.ini" "$old_config"
+    ynh_print_warn "The configuration of an earlier installation was set aside in $old_config"
+fi
 
 # Same installation as the wizard of the portal (tools/install.php of Carbure): schema,
 # starter categories, rules and insights, first administrator, configuration with random

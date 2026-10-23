@@ -29,13 +29,23 @@ _carbure_layout() {
     chmod -R u=rwX,go= "$data_dir"
 }
 
-# woob in its own virtualenv, built again at each upgrade (woob or Python may change)
+# woob in its own virtualenv, (re)built only when it is missing or when the version of woob
+# or of Python changed: building it takes several minutes
 _woob_install() {
+    local wanted
+    wanted="$woob_version python$(python3 -c 'import sys; print("%d.%d" % sys.version_info[:2])')"
+    if [ -x "$install_dir/woob/bin/woob" ] && [ "$(ynh_app_setting_get --key=woob_built)" = "$wanted" ]; then
+        ynh_print_info "woob $woob_version is already installed"
+        return 0
+    fi
+
+    ynh_print_info "Installing woob $woob_version (bank synchronization), this takes a few minutes..."
     ynh_safe_rm "$install_dir/woob"
     ynh_exec_as_app python3 -m venv "$install_dir/woob"
     ynh_exec_as_app "$install_dir/woob/bin/pip" install --quiet --no-cache-dir --upgrade "pip>=26.1.2" "setuptools>=78.1.1"
     ynh_exec_as_app "$install_dir/woob/bin/pip" install --quiet --no-cache-dir "woob==$woob_version" "curl_cffi>=0.7"
     ynh_exec_as_app "$install_dir/woob/bin/python" -c "import curl_cffi, lxml.etree, woob"
+    ynh_app_setting_set --key=woob_built --value="$wanted"
 }
 
 # Bank modules of woob, once an administrator has trusted the repository from the

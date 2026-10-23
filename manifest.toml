@@ -40,10 +40,9 @@ ram.runtime = "150M"
     type = "domain"
 
     [install.init_main_permission]
-    # Public by default: the mobile apps and the scheduled synchronization call the API
-    # without the YunoHost portal; Carbure asks for its own login
-    help.en = "Keep it public (visitors) for the iPhone and Android apps: Carbure always asks for its own login."
-    help.fr = "Laissez-la publique (visiteurs) pour les applications iPhone et Android : Carbure demande toujours sa propre connexion."
+    # The web portal; the API stays public whatever this choice (permission "api")
+    help.en = "Who can open the web portal. Carbure always asks for its own login; the API stays public for the mobile apps and the synchronization."
+    help.fr = "Qui peut ouvrir le portail web. Carbure demande toujours sa propre connexion ; l'API reste publique pour les applications mobiles et la synchronisation."
     type = "group"
     default = "visitors"
 
@@ -87,6 +86,16 @@ ram.runtime = "150M"
     main.url = "/"
     # Never replace the Authorization header of Carbure (its JWT) by the YunoHost one
     main.auth_header = false
+
+    # The API and the OAuth metadata of the MCP server, always public: the mobile apps,
+    # the daily synchronization and the AI agents reach them outside the YunoHost portal,
+    # and Carbure checks its own tokens. The portal (main) can be made private.
+    api.url = "/api"
+    api.additional_urls = ["/.well-known/oauth-protected-resource", "/.well-known/oauth-authorization-server"]
+    api.allowed = "visitors"
+    api.show_tile = false
+    api.protected = true
+    api.auth_header = false
 
     [resources.apt]
     packages = [

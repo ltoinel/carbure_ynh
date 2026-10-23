@@ -22,7 +22,8 @@ upgrades of the package update them too.
 
 ### Upgrades
 
-An upgrade applies the migrations of the database (`tools/migrate.php`) and rebuilds woob.
+An upgrade applies the migrations of the database (`tools/migrate.php`), updates the bank
+modules, and rebuilds woob when its version changes. YunoHost backs Carbure up before it.
 Read the [release notes](https://github.com/ltoinel/Carbure/releases) of Carbure before a
 major upgrade.
 
