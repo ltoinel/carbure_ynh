@@ -29,9 +29,10 @@ the administration is described in [doc/ADMIN.md](doc/ADMIN.md).
 
 ## Status
 
-Work in progress, not yet in the YunoHost catalog. It needs Carbure 1.10.0 (the first
+Work in progress, not yet in the YunoHost catalog. It installs Carbure 1.10.0 (the first
 release with `tools/install.php`). Tested with
-[package_check](https://github.com/YunoHost/package_check): not yet.
+[package_check](https://github.com/YunoHost/package_check): not yet; your feedback is
+welcome in the [issues](https://github.com/ltoinel/carbure_ynh/issues).
 
 ## Links
 

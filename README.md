@@ -31,9 +31,10 @@ l'administration est décrite dans [doc/ADMIN_fr.md](doc/ADMIN_fr.md).
 
 ## État
 
-En cours, pas encore au catalogue YunoHost. Il faut Carbure 1.10.0 (la première version
-avec `tools/install.php`). Testé avec
-[package_check](https://github.com/YunoHost/package_check) : pas encore.
+En cours, pas encore au catalogue YunoHost. Il installe Carbure 1.10.0 (la première
+version avec `tools/install.php`). Testé avec
+[package_check](https://github.com/YunoHost/package_check) : pas encore ; vos retours sont
+les bienvenus dans les [issues](https://github.com/ltoinel/carbure_ynh/issues).
 
 ## Liens
 
