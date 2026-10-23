@@ -30,29 +30,40 @@ jobs:
           tag=$(gh release view --repo ltoinel/Carbure --json tagName --jq .tagName)
           # Only vX.Y.Z: the tag ends up in the manifest and in a branch name
           [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Unexpected tag: $tag"; exit 1; }
+          url="https://github.com/ltoinel/Carbure/archive/refs/tags/$tag.tar.gz"
+          sha256=$(curl -fsSL "$url" | sha256sum | cut -d' ' -f1)
+          # Up to date when both the version and the archive match (a manifest prepared for
+          # a release before its publication has the version but not its sha256 yet)
           current=$(sed -n 's/^version = "\(.*\)~ynh[0-9]*"$/\1/p' manifest.toml)
+          current_sha256=$(sed -n 's/^        sha256 = "\(.*\)"$/\1/p' manifest.toml)
+          outdated=false
+          [ "${tag#v}" = "$current" ] && [ "$sha256" = "$current_sha256" ] || outdated=true
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
-          echo "current=$current" >> "$GITHUB_OUTPUT"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "sha256=$sha256" >> "$GITHUB_OUTPUT"
+          echo "outdated=$outdated" >> "$GITHUB_OUTPUT"
 
       - name: Update the manifest
-        if: steps.release.outputs.version != steps.release.outputs.current
+        if: steps.release.outputs.outdated == 'true'
         env:
-          TAG: ${{ steps.release.outputs.tag }}
           VERSION: ${{ steps.release.outputs.version }}
+          URL: ${{ steps.release.outputs.url }}
+          SHA256: ${{ steps.release.outputs.sha256 }}
         run: |
-          url="https://github.com/ltoinel/Carbure/archive/refs/tags/$TAG.tar.gz"
-          sha256=$(curl -fsSL "$url" | sha256sum | cut -d' ' -f1)
+          current=$(sed -n 's/^version = "\(.*\)~ynh[0-9]*"$/\1/p' manifest.toml)
+          # Same version (only the archive changes): keep its ~ynh revision
+          [ "$VERSION" = "$current" ] && revision=$(sed -n 's/^version = ".*~ynh\([0-9]*\)"$/\1/p' manifest.toml) || revision=1
           sed -i \
-            -e "s|^version = \".*\"$|version = \"$VERSION~ynh1\"|" \
-            -e "s|^        url = \"https://github.com/ltoinel/Carbure/archive/refs/tags/.*\"$|        url = \"$url\"|" \
-            -e "s|^        sha256 = \".*\"$|        sha256 = \"$sha256\"|" \
+            -e "s|^version = \".*\"$|version = \"$VERSION~ynh$revision\"|" \
+            -e "s|^        url = \"https://github.com/ltoinel/Carbure/archive/refs/tags/.*\"$|        url = \"$URL\"|" \
+            -e "s|^        sha256 = \".*\"$|        sha256 = \"$SHA256\"|" \
             -e "/# FIXME: set the sha256 of the release/d" \
             manifest.toml
           git diff --stat
 
       - name: Open the pull request
-        if: steps.release.outputs.version != steps.release.outputs.current
+        if: steps.release.outputs.outdated == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.release.outputs.version }}
