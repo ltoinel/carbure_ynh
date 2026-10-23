@@ -1,39 +1,41 @@
-# Carbure for YunoHost
+# Carbure pour YunoHost
 
-[Carbure](https://carbure.org) packaged for [YunoHost](https://yunohost.org): a self-hosted
-household budget manager, with automatic bank synchronization ([woob](https://woob.tech/)),
-categories, budgets, trends, and [iPhone](https://apps.apple.com/fr/app/carbure/id6824057363)
-and [Android](https://play.google.com/store/apps/details?id=org.carbure.app) apps.
+[Carbure](https://carbure.org) empaqueté pour [YunoHost](https://yunohost.org) : un
+gestionnaire de budget du foyer auto-hébergé, avec synchronisation bancaire automatique
+([woob](https://woob.tech/)), catégories, budgets, tendances, et applications
+[iPhone](https://apps.apple.com/fr/app/carbure/id6824057363) et
+[Android](https://play.google.com/store/apps/details?id=org.carbure.app).
 
-*[Lire en français](README_fr.md)*
+*[Read in English](README_en.md)*
 
-![Transactions of the month](doc/screenshots/transactions.png)
+![Transactions du mois](doc/screenshots/transactions.png)
 
-## Install
+## Installer
 
 ```bash
 sudo yunohost app install https://github.com/ltoinel/carbure_ynh
 ```
 
-Carbure needs a domain of its own. Read [doc/PRE_INSTALL.md](doc/PRE_INSTALL.md) first;
-the administration is described in [doc/ADMIN.md](doc/ADMIN.md).
+Carbure a besoin d'un domaine dédié. Lisez d'abord [doc/PRE_INSTALL_fr.md](doc/PRE_INSTALL_fr.md) ;
+l'administration est décrite dans [doc/ADMIN_fr.md](doc/ADMIN_fr.md).
 
-## What the package does
+## Ce que fait le paquet
 
-- Carbure in `/var/www/<app>`, served by nginx and PHP-FPM (PHP 8.4, MariaDB).
-- Its data (configuration, logs, woob with the banks) in `/home/yunohost.app/<app>`.
-- Installed without the web wizard by `tools/install.php` of Carbure: schema, starter
-  categories, rules and insights, the chosen YunoHost user as administrator.
-- woob in a virtualenv, rebuilt at each upgrade; migrations applied at each upgrade.
-- Daily synchronization of every account (cron).
+- Carbure dans `/var/www/<app>`, servi par nginx et PHP-FPM (PHP 8.4, MariaDB).
+- Ses données (configuration, logs, woob avec les banques) dans `/home/yunohost.app/<app>`.
+- Installé sans l'assistant web par `tools/install.php` de Carbure : schéma, catégories,
+  règles et insights de départ, l'utilisateur YunoHost choisi comme administrateur.
+- woob dans un environnement virtuel, reconstruit à chaque mise à jour ; migrations
+  appliquées à chaque mise à jour.
+- Synchronisation quotidienne de tous les comptes (cron).
 
-## Status
+## État
 
-Work in progress, not yet in the YunoHost catalog. It needs Carbure 1.10.0 (the first
-release with `tools/install.php`). Tested with
-[package_check](https://github.com/YunoHost/package_check): not yet.
+En cours, pas encore au catalogue YunoHost. Il faut Carbure 1.10.0 (la première version
+avec `tools/install.php`). Testé avec
+[package_check](https://github.com/YunoHost/package_check) : pas encore.
 
-## Links
+## Liens
 
-- Carbure: <https://github.com/ltoinel/Carbure> · documentation <https://carbure.org>
-- Report a bug of the package: <https://github.com/ltoinel/carbure_ynh/issues>
+- Carbure : <https://github.com/ltoinel/Carbure> · documentation <https://carbure.org>
+- Signaler un bug du paquet : <https://github.com/ltoinel/carbure_ynh/issues>
