@@ -66,9 +66,8 @@ ram.runtime = "150M"
     [resources.sources]
 
         [resources.sources.main]
-        # FIXME: set the sha256 of the release (or let the autoupdate bot do it)
         url = "https://github.com/ltoinel/Carbure/archive/refs/tags/v1.10.0.tar.gz"
-        sha256 = "0000000000000000000000000000000000000000000000000000000000000000"
+        sha256 = "c1ac53340e38cc4ffa26042e0509a1c86c808b3ef91c1c4fb18c6aa53bbff39d"
         autoupdate.strategy = "latest_github_release"
 
     [resources.system_user]
