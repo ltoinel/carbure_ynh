@@ -1,0 +1,2 @@
+# Bank synchronization of every account of Carbure, once a day (__INSTALL_DIR__/ynh-sync.sh)
+__SYNC_MINUTE__ __SYNC_HOUR__ * * * __APP__ __INSTALL_DIR__/ynh-sync.sh

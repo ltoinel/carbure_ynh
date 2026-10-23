@@ -1,0 +1,9 @@
+#:schema https://raw.githubusercontent.com/YunoHost/apps/main/schemas/tests.v1.schema.json
+
+test_format = 1.0
+
+[default]
+
+    # The administrator password must contain 8 characters at least
+    args.password = "carbure-test-1"
+    args.language = "fr"

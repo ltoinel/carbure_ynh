@@ -1,0 +1,26 @@
+#!/bin/bash
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# MODIFY URL IN NGINX CONF
+#=================================================
+ynh_script_progression "Updating NGINX web server configuration..."
+
+ynh_config_change_url_nginx
+
+#=================================================
+# SPECIFIC MODIFICATIONS
+#=================================================
+ynh_script_progression "Updating the address of Carbure..."
+
+# Address given to the mobile apps (QR code) and to the AI agents (OAuth)
+ynh_write_var_in_file --file="$data_dir/conf/prod.ini" --key=public_url --value="https://$domain"
+# The synchronization calls the API on the new domain
+_sync_add
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+ynh_script_progression "Change of URL completed for $app"

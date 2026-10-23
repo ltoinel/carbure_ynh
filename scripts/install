@@ -1,0 +1,65 @@
+#!/bin/bash
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# CHECKS
+#=================================================
+
+# Rules of the first administrator of Carbure (Installer::createAdmin)
+if [ ${#password} -lt 8 ]; then
+    ynh_die "The password of the Carbure administrator must contain at least 8 characters"
+fi
+if ! [[ "$admin" =~ ^[A-Za-z0-9_.@-]{1,20}$ ]]; then
+    ynh_die "The login of the Carbure administrator is limited to 20 letters, digits or _ . @ -: choose another YunoHost user"
+fi
+
+_php_settings
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+ynh_script_progression "Setting up source files..."
+
+ynh_setup_source --dest_dir="$install_dir"
+_carbure_layout
+
+ynh_script_progression "Installing woob $woob_version (bank synchronization), this takes a few minutes..."
+
+_woob_install
+
+#=================================================
+# SYSTEM CONFIGURATION
+#=================================================
+ynh_script_progression "Adding system configurations related to $app..."
+
+ynh_config_add_phpfpm
+ynh_config_add_nginx
+_sync_add
+
+#=================================================
+# INSTALL CARBURE
+#=================================================
+ynh_script_progression "Installing Carbure..."
+
+admin_mail=$(ynh_user_get_info --username="$admin" --key=mail)
+
+# Same installation as the wizard of the portal (tools/install.php of Carbure): schema,
+# starter categories, rules and insights, first administrator, configuration with random
+# secrets. The passwords go through the environment, never on a command line.
+export CARBURE_DB_PASSWORD="$db_pwd"
+export CARBURE_ADMIN_PASSWORD="$password"
+sudo --preserve-env=CARBURE_DB_PASSWORD,CARBURE_ADMIN_PASSWORD -u "$app" \
+    "php$php_version" "$install_dir/tools/install.php" \
+        --db-host=localhost --db-name="$db_name" --db-user="$db_user" \
+        --admin="$admin" --email="$admin_mail" --language="$language" --starter \
+        --woob-path="$(woob_command)" --public-url="https://$domain"
+unset CARBURE_DB_PASSWORD CARBURE_ADMIN_PASSWORD
+
+chmod 600 "$data_dir/conf/prod.ini"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+ynh_script_progression "Installation of $app completed"

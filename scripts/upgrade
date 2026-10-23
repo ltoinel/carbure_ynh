@@ -1,0 +1,47 @@
+#!/bin/bash
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# ENSURE DOWNWARD COMPATIBILITY
+#=================================================
+ynh_script_progression "Ensuring downward compatibility..."
+
+_php_settings
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+ynh_script_progression "Upgrading source files..."
+
+# The data (configuration, logs, woob) is in the data directory: nothing to keep here
+ynh_setup_source --dest_dir="$install_dir" --full_replace
+_carbure_layout
+
+ynh_script_progression "Installing woob $woob_version, this takes a few minutes..."
+
+_woob_install
+
+#=================================================
+# SYSTEM CONFIGURATION
+#=================================================
+ynh_script_progression "Upgrading system configurations related to $app..."
+
+ynh_config_add_phpfpm
+ynh_config_add_nginx
+_sync_add
+
+#=================================================
+# DATABASE AND BANK MODULES
+#=================================================
+ynh_script_progression "Applying the migrations of the database..."
+
+ynh_exec_as_app "php$php_version" "$install_dir/tools/migrate.php"
+
+_woob_update
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+ynh_script_progression "Upgrade of $app completed"

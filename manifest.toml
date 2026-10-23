@@ -1,0 +1,102 @@
+#:schema https://raw.githubusercontent.com/YunoHost/apps/main/schemas/manifest.v2.schema.json
+
+packaging_format = 2
+
+id = "carbure"
+name = "Carbure"
+description.en = "Household budget: bank accounts synced automatically, categories, budgets and trends"
+description.fr = "Budget du foyer : comptes bancaires synchronisés, catégories, budgets et tendances"
+
+version = "1.10.0~ynh1"
+
+maintainers = ["ltoinel"]
+
+[upstream]
+license = "MIT"
+website = "https://carbure.org"
+demo = "https://demo.carbure.org"
+admindoc = "https://carbure.org/installation/"
+userdoc = "https://carbure.org/"
+code = "https://github.com/ltoinel/Carbure"
+
+[integration]
+yunohost = ">= 12.1.17"
+helpers_version = "2.1"
+# woob needs curl_cffi, published for these two architectures only
+architectures = ["amd64", "arm64"]
+multi_instance = true
+# Carbure has its own accounts (also used by the mobile apps): no LDAP, no SSO
+ldap = false
+sso = false
+# Mostly the virtualenv of woob
+disk = "600M"
+ram.build = "500M"
+ram.runtime = "150M"
+
+[install]
+    # A whole domain (no path question): Carbure serves /portal/, /api/ and the OAuth
+    # files /.well-known/oauth-* of the AI agents at the root
+    [install.domain]
+    type = "domain"
+
+    [install.init_main_permission]
+    # Public by default: the mobile apps and the scheduled synchronization call the API
+    # without the YunoHost portal; Carbure asks for its own login
+    help.en = "Keep it public (visitors) for the iPhone and Android apps: Carbure always asks for its own login."
+    help.fr = "Laissez-la publique (visiteurs) pour les applications iPhone et Android : Carbure demande toujours sa propre connexion."
+    type = "group"
+    default = "visitors"
+
+    [install.language]
+    ask.en = "Language of the administrator (and of the starter categories)"
+    ask.fr = "Langue de l'administrateur (et des catégories de départ)"
+    type = "select"
+    choices = ["fr", "en", "es", "it", "de", "pt"]
+    default = "fr"
+
+    [install.admin]
+    # The login of this YunoHost user becomes the Carbure administrator
+    type = "user"
+
+    [install.password]
+    help.en = "Password of the Carbure administrator (8 characters at least). It is not the YunoHost password: Carbure keeps its own accounts."
+    help.fr = "Mot de passe de l'administrateur de Carbure (8 caractères minimum). Ce n'est pas celui de YunoHost : Carbure a ses propres comptes."
+    type = "password"
+
+[resources]
+    [resources.sources]
+
+        [resources.sources.main]
+        # FIXME: set the sha256 of the release (or let the autoupdate bot do it)
+        url = "https://github.com/ltoinel/Carbure/archive/refs/tags/v1.10.0.tar.gz"
+        sha256 = "0000000000000000000000000000000000000000000000000000000000000000"
+        autoupdate.strategy = "latest_github_release"
+
+    [resources.system_user]
+    allow_email = true
+
+    [resources.install_dir]
+    # nginx serves the portal and Swagger UI files
+    group = "www-data:r-x"
+
+    [resources.data_dir]
+    # Configuration, logs, cache and woob (banks and their credentials)
+    subdirs = ["conf", "logs", "cache", "woob"]
+
+    [resources.permissions]
+    main.url = "/"
+    # Never replace the Authorization header of Carbure (its JWT) by the YunoHost one
+    main.auth_header = false
+
+    [resources.apt]
+    packages = [
+        "mariadb-server",
+        "php8.4-mysql", "php8.4-apcu", "php8.4-mbstring", "php8.4-curl", "php8.4-xml",
+        "curl", "gpgv",
+        # woob and its dependencies, built in a virtualenv
+        "python3-venv", "python3-dev", "build-essential", "libffi-dev", "libxml2-dev", "libxslt1-dev",
+        "libjpeg-dev", "zlib1g-dev",
+    ]
+
+    [resources.database]
+    type = "mysql"
