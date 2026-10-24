@@ -8,6 +8,12 @@
 # Carbure, the one its bank modules are tested with
 woob_version="3.7"
 
+# Python packages of the bank modules, that woob checks but never installs (it refuses to
+# load a module missing one): as docker/Dockerfile of Carbure. curl_cffi (BNP),
+# python-jose and chompjs (BPCE group), schwifty (Societe Generale), pycryptodomex
+# (employee savings). Changing the list rebuilds the virtualenv
+woob_packages="curl_cffi>=0.7 python-jose chompjs schwifty pycryptodomex"
+
 # woob command written in the configuration of Carbure: its banks (and their credentials)
 # are kept in the data directory
 woob_command() {
@@ -29,11 +35,11 @@ _carbure_layout() {
     chmod -R u=rwX,go= "$data_dir"
 }
 
-# woob in its own virtualenv, (re)built only when it is missing or when the version of woob
-# or of Python changed: building it takes several minutes
+# woob in its own virtualenv, (re)built only when it is missing or when the version of woob,
+# its packages or the version of Python changed: building it takes several minutes
 _woob_install() {
     local wanted
-    wanted="$woob_version python$(python3 -c 'import sys; print("%d.%d" % sys.version_info[:2])')"
+    wanted="$woob_version $woob_packages python$(python3 -c 'import sys; print("%d.%d" % sys.version_info[:2])')"
     if [ -x "$install_dir/woob/bin/woob" ] && [ "$(ynh_app_setting_get --key=woob_built)" = "$wanted" ]; then
         ynh_print_info "woob $woob_version is already installed"
         return 0
@@ -43,8 +49,9 @@ _woob_install() {
     ynh_safe_rm "$install_dir/woob"
     ynh_exec_as_app python3 -m venv "$install_dir/woob"
     ynh_exec_as_app "$install_dir/woob/bin/pip" install --quiet --no-cache-dir --upgrade "pip>=26.1.2" "setuptools>=78.1.1"
-    ynh_exec_as_app "$install_dir/woob/bin/pip" install --quiet --no-cache-dir "woob==$woob_version" "curl_cffi>=0.7"
-    ynh_exec_as_app "$install_dir/woob/bin/python" -c "import curl_cffi, lxml.etree, woob"
+    # shellcheck disable=SC2086
+    ynh_exec_as_app "$install_dir/woob/bin/pip" install --quiet --no-cache-dir "woob==$woob_version" $woob_packages
+    ynh_exec_as_app "$install_dir/woob/bin/python" -c "import curl_cffi, lxml.etree, woob, jose, chompjs, schwifty, Cryptodome"
     ynh_app_setting_set --key=woob_built --value="$wanted"
 }
 
