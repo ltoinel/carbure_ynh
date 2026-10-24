@@ -1,11 +1,4 @@
-- Carbure a besoin d'un **domaine dédié** (par exemple `budget.exemple.org`) : il ne
-  s'installe pas dans un sous-chemin.
-- Carbure demande toujours sa propre connexion : ses comptes ne sont pas ceux de YunoHost
-  (pas de SSO). Le **portail web** peut être public ou réservé aux utilisateurs YunoHost ;
-  l'**API** reste publique dans tous les cas (permission « api »), car les applications
-  mobiles, la synchronisation quotidienne et les agents IA l'appellent en dehors du portail
-  YunoHost.
-- L'utilisateur YunoHost choisi à l'installation devient l'administrateur de Carbure, avec
-  le mot de passe saisi ici (8 caractères minimum).
-- L'installation construit [woob](https://woob.tech/), qui synchronise les banques, dans un
-  environnement virtuel : comptez quelques minutes et environ 500 Mo.
+- Carbure a besoin d'un **domaine dédié** (par exemple `budget.exemple.org`) : il ne s'installe pas dans un sous-chemin.
+- Carbure demande toujours sa propre connexion : ses comptes ne sont pas ceux de YunoHost (pas de SSO). Le **portail web** peut être public ou réservé aux utilisateurs YunoHost ; l'**API** reste publique dans tous les cas (permission « api »), car les applications mobiles, la synchronisation quotidienne et les agents IA l'appellent en dehors du portail YunoHost.
+- L'utilisateur YunoHost choisi à l'installation devient l'administrateur de Carbure, avec le mot de passe saisi ici (8 caractères minimum).
+- L'installation construit [woob](https://woob.tech/), qui synchronise les banques, dans un environnement virtuel : comptez quelques minutes et environ 500 Mo.
