@@ -1,10 +1,4 @@
-- Carbure needs a **domain of its own** (for instance `budget.example.org`): it cannot be
-  installed in a sub-path.
-- Carbure always asks for its own login: its accounts are not the YunoHost accounts (no
-  SSO). The **web portal** can be public or reserved to YunoHost users; the **API** stays
-  public in any case (permission "api"), because the mobile apps, the daily
-  synchronization and the AI agents reach it outside the YunoHost portal.
-- The YunoHost user chosen at the installation becomes the Carbure administrator, with the
-  password typed here (8 characters at least).
-- The installation builds [woob](https://woob.tech/), used to synchronize the banks, in a
-  virtualenv: it takes a few minutes and about 500 MB.
+- Carbure needs a **domain of its own** (for instance `budget.example.org`): it cannot be installed in a sub-path.
+- Carbure always asks for its own login: its accounts are not the YunoHost accounts (no SSO). The **web portal** can be public or reserved to YunoHost users; the **API** stays public in any case (permission "api"), because the mobile apps, the daily synchronization and the AI agents reach it outside the YunoHost portal.
+- The YunoHost user chosen at the installation becomes the Carbure administrator, with the password typed here (8 characters at least).
+- The installation builds [woob](https://woob.tech/), used to synchronize the banks, in a virtualenv: it takes a few minutes and about 500 MB.

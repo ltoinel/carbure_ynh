@@ -7,24 +7,16 @@
 | woob: bank modules and the credentials of your banks | `__DATA_DIR__/woob/` |
 | Sources and the virtualenv of woob | `__INSTALL_DIR__/` |
 
-Most settings are changed in the portal, **Administration → Settings**: no need to edit
-`prod.ini`. The YunoHost backups include the data directory and the database (not the
-backups made with `--core-only`: back up `__DATA_DIR__` yourself then).
+Most settings are changed in the portal, **Administration → Settings**: no need to edit `prod.ini`. The YunoHost backups include the data directory and the database (not the backups made with `--core-only`: back up `__DATA_DIR__` yourself then).
 
 ### Synchronization
 
-`/etc/cron.d/__APP__` synchronizes every account once a day, at
-__SYNC_HOUR__:__SYNC_MINUTE__, through `__INSTALL_DIR__/ynh-sync.sh`. A bank asking for a
-validation on the phone (strong authentication) is synchronized from the portal.
+`/etc/cron.d/__APP__` synchronizes every account once a day, at __SYNC_HOUR__:__SYNC_MINUTE__, through `__INSTALL_DIR__/ynh-sync.sh`. A bank asking for a validation on the phone (strong authentication) is synchronized from the portal.
 
-When the synchronization fails, update the bank modules from the **Accounts** page; the
-upgrades of the package update them too.
+When the synchronization fails, update the bank modules from the **Accounts** page; the upgrades of the package update them too.
 
 ### Upgrades
 
-An upgrade applies the migrations of the database (`tools/migrate.php`), updates the bank
-modules, and rebuilds woob when its version changes. YunoHost backs Carbure up before it.
-Read the [release notes](https://github.com/ltoinel/Carbure/releases) of Carbure before a
-major upgrade.
+An upgrade applies the migrations of the database (`tools/migrate.php`), updates the bank modules, and rebuilds woob when its version changes. YunoHost backs Carbure up before it. Read the [release notes](https://github.com/ltoinel/Carbure/releases) of Carbure before a major upgrade.
 
 More: [documentation of Carbure](https://carbure.org/).
