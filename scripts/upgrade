@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -15,8 +19,7 @@ _php_settings
 #=================================================
 ynh_script_progression "Upgrading source files..."
 
-# The data (configuration, logs, banks) is in the data directory; the virtualenv of woob
-# is kept, and rebuilt only when its version changes
+# Keep the woob virtualenv (rebuilt only when needed)
 ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="woob"
 _carbure_layout
 _woob_install
