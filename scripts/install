@@ -32,6 +32,7 @@ _woob_install
 ynh_script_progression "Adding system configurations related to $app..."
 
 ynh_config_add_phpfpm
+_nginx_http_add
 ynh_config_add_nginx
 _sync_add
 
@@ -64,6 +65,11 @@ sudo --preserve-env=CARBURE_DB_PASSWORD,CARBURE_ADMIN_PASSWORD -u "$app" \
 unset CARBURE_DB_PASSWORD CARBURE_ADMIN_PASSWORD
 
 chmod 600 "$data_dir/conf/prod.ini"
+
+# Bank modules of woob: the banks can be connected right after the installation
+ynh_script_progression "Installing the bank modules of woob..."
+
+_woob_update
 
 #=================================================
 # END OF SCRIPT

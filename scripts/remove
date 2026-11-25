@@ -10,6 +10,9 @@ ynh_script_progression "Removing system configurations related to $app..."
 
 ynh_safe_rm "/etc/cron.d/$app"
 ynh_config_remove_nginx
+# After the configuration of the domain, which uses it
+ynh_safe_rm "/etc/nginx/conf.d/$app-http.conf"
+ynh_systemctl --service=nginx --action=reload
 ynh_config_remove_phpfpm
 
 # The install directory, the database and the system user are removed by YunoHost; the
