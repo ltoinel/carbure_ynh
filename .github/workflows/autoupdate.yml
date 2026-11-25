@@ -69,13 +69,16 @@ jobs:
           VERSION: ${{ steps.release.outputs.version }}
         run: |
           branch="ci-auto-update-v$VERSION"
-          if git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+          # An open pull request, not only its branch: a branch pushed by a run that could
+          # not open the pull request (repository setting "Allow GitHub Actions to create
+          # and approve pull requests" off) is pushed again, and the run fails again
+          if [ -n "$(gh pr list --head "$branch" --state open --json number --jq '.[].number')" ]; then
             echo "A pull request for $VERSION already exists"; exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c "$branch"
           git commit -am "Upgrade to Carbure $VERSION"
-          git push origin "$branch"
+          git push --force origin "$branch"
           gh pr create --base main --head "$branch" --title "Upgrade to Carbure $VERSION" \
             --body "New release of Carbure: https://github.com/ltoinel/Carbure/releases/tag/v$VERSION. Read its notes (migrations, breaking changes) and test the upgrade before merging."
