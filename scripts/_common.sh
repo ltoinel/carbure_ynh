@@ -55,11 +55,15 @@ _woob_install() {
     ynh_app_setting_set --key=woob_built --value="$wanted"
 }
 
-# Bank modules of woob, once an administrator has trusted the repository from the
-# Accounts page of the portal (as the Docker image does at each start); a failure is
-# only a warning: the modules are updated again from the portal
+# Bank modules of woob (as the Docker image does at each start). Without a trusted keyring
+# yet, the one of the official woob repository is trusted when it is exactly the one
+# pinned by Carbure, and the modules are installed (tools/woob-trust.php, Carbure 1.13);
+# any other keyring is trusted by an administrator from the Accounts page of the portal.
+# A failure is only a warning: the modules are updated again from the portal
 _woob_update() {
     if [ -z "$(ls -A "$data_dir/woob/.local/share/woob/keyrings" 2>/dev/null)" ]; then
+        ynh_exec_as_app "php$php_version" "$install_dir/tools/woob-trust.php" < /dev/null > /dev/null 2>&1 \
+            || ynh_print_warn "The woob repository is not trusted yet: confirm its fingerprint from the Accounts page of Carbure (update the bank modules)"
         return 0
     fi
     ynh_exec_as_app env HOME="$data_dir/woob" "$install_dir/woob/bin/woob" config update < /dev/null \
@@ -80,6 +84,12 @@ _sync_add() {
     chown "$app:$app" "$install_dir/ynh-sync.sh"
     chmod 750 "$install_dir/ynh-sync.sh"
     ynh_config_add --template="cron" --destination="/etc/cron.d/$app"
+}
+
+# Settings of nginx outside the server of the domain (rate limit of the logins): added
+# before the configuration of the domain, which uses them
+_nginx_http_add() {
+    ynh_config_add --template="nginx-http.conf" --destination="/etc/nginx/conf.d/$app-http.conf"
 }
 
 # PHP settings of Carbure (docker/php.ini), kept when an admin changed them

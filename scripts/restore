@@ -19,6 +19,9 @@ ynh_mysql_db_shell < ./db.sql
 ynh_script_progression "Restoring system configurations related to $app..."
 
 ynh_restore "/etc/php/$php_version/fpm/pool.d/$app.conf"
+# Not in the backup (nothing of the instance in it): written again, before the
+# configuration of the domain, which uses it
+_nginx_http_add
 ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_restore "/etc/cron.d/$app"
 

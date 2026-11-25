@@ -27,6 +27,7 @@ _woob_install
 ynh_script_progression "Upgrading system configurations related to $app..."
 
 ynh_config_add_phpfpm
+_nginx_http_add
 ynh_config_add_nginx
 _sync_add
 
