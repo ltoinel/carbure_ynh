@@ -1,9 +1,7 @@
 #!/bin/sh
-# Bank synchronization of every account of Carbure, started by /etc/cron.d/__APP__.
-# The token goes through the configuration of curl (stdin), never on its command line,
-# which any user of the server could read in the list of the processes. The request goes to
-# the local nginx (127.0.0.1): the certificate is not checked, so that a domain with a
-# self-signed certificate is synchronized too.
+# Daily bank synchronization of Carbure (/etc/cron.d/__APP__).
+# The token is given to curl on stdin, not on its command line (visible to other users).
+# Local request (127.0.0.1): the certificate is not checked.
 set -eu
 
 token=$(sed -n 's/^sync_token=//p' "__DATA_DIR__/conf/prod.ini" | tr -d '"')

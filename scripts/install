@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -7,7 +11,7 @@ source /usr/share/yunohost/helpers
 # CHECKS
 #=================================================
 
-# Rules of the first administrator of Carbure (Installer::createAdmin)
+# Carbure's own rules for its administrator account
 if [ ${#password} -lt 8 ]; then
     ynh_die "The password of the Carbure administrator must contain at least 8 characters"
 fi
@@ -43,18 +47,16 @@ ynh_script_progression "Installing Carbure..."
 
 admin_mail=$(ynh_user_get_info --username="$admin" --key=mail)
 
-# The data directory of an earlier installation, removed without --purge, is kept by
-# YunoHost: its configuration points to the database removed with it. It is set aside, and
-# Carbure installed on the new database (woob keeps the banks already configured).
+# A data directory kept from a previous install (removed without --purge) has a
+# configuration pointing to the old database: set it aside
 if [ -f "$data_dir/conf/prod.ini" ]; then
     old_config="$data_dir/conf/prod.ini.old-$(date +%Y%m%d%H%M%S)"
     mv "$data_dir/conf/prod.ini" "$old_config"
     ynh_print_warn "The configuration of an earlier installation was set aside in $old_config"
 fi
 
-# Same installation as the wizard of the portal (tools/install.php of Carbure): schema,
-# starter categories, rules and insights, first administrator, configuration with random
-# secrets. The passwords go through the environment, never on a command line.
+# Command-line installer of Carbure: schema, starter data, administrator, configuration.
+# Passwords are passed through the environment, not the command line
 export CARBURE_DB_PASSWORD="$db_pwd"
 export CARBURE_ADMIN_PASSWORD="$password"
 sudo --preserve-env=CARBURE_DB_PASSWORD,CARBURE_ADMIN_PASSWORD -u "$app" \
@@ -66,7 +68,6 @@ unset CARBURE_DB_PASSWORD CARBURE_ADMIN_PASSWORD
 
 chmod 600 "$data_dir/conf/prod.ini"
 
-# Bank modules of woob: the banks can be connected right after the installation
 ynh_script_progression "Installing the bank modules of woob..."
 
 _woob_update
