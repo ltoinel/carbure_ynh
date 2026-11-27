@@ -4,7 +4,7 @@ It shall NOT be edited by hand.
 -->
 
 <h1>
-  <img src="https://raw.githubusercontent.com/YunoHost/apps/main/logos/carbure.png" width="32px" alt="Logo of Carbure">
+  <img src="https://carbure.org/assets/logo.png" width="32px" alt="Logo of Carbure">
   Carbure, packaged for YunoHost
 </h1>
 
@@ -16,7 +16,7 @@ Household budget: bank accounts synced automatically, categories, budgets and tr
 
 <div align="center">
 <a href="https://apps.yunohost.org/app/carbure"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_more_info_on_the_appstore.svg"/></a>
-<a href="https://github.com/YunoHost-Apps/carbure_ynh/issues"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_report_an_issue.svg"/></a>
+<a href="https://github.com/ltoinel/carbure_ynh/issues"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_report_an_issue.svg"/></a>
 </div>
 
 
